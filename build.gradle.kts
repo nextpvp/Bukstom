@@ -13,7 +13,7 @@ plugins {
 
 repositories {
     // Use jcenter for resolving dependencies.
-    jcenter()
+    //jcenter()
 
     // Use mavenCentral
     mavenCentral()
@@ -39,7 +39,7 @@ dependencies {
     compileOnly(kotlin("reflect"))
 
     // Compile Minestom into project
-    compileOnly("com.github.Minestom:Minestom:05a553eb4e")
+    compileOnly("com.github.minestom:minestom:83ab75d1bf")
 
     // import kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
@@ -60,8 +60,8 @@ tasks.withType<Test> {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks {
