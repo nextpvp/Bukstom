@@ -6,7 +6,6 @@ plugins {
 	kotlin("plugin.serialization") version "1.5.31"
 	id("com.github.johnrengelman.shadow") version "7.0.0"
 	`maven-publish`
-
 	// Apply the application plugin to add support for building a jar
 	java
 }
@@ -73,6 +72,17 @@ tasks {
 
 	build { dependsOn(shadowJar) }
 
+}
+
+publishing {
+	publications {
+		create("maven_public", MavenPublication::class) {
+			groupId = "world.cepi"
+			artifactId = "bukstom"
+			version = "1.0"
+			from(components.getByName("java"))
+		}
+	}
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> { kotlinOptions.jvmTarget = "17" }
