@@ -51,7 +51,7 @@ dependencies {
 	implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
 
 	// Add KStom
-	compileOnly("com.github.Project-Cepi:KStom:b30449df1c")
+	//compileOnly("com.github.Project-Cepi:KStom:b30449df1c")
 }
 
 tasks.withType<Test> {

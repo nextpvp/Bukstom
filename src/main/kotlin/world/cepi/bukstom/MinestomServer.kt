@@ -40,9 +40,6 @@ import world.cepi.bukstom.scoreboard.MinestomScoreboardManager
 import world.cepi.bukstom.util.MinestomUnsafeValues
 import world.cepi.bukstom.util.toMinestom
 import world.cepi.bukstom.world.MinestomWorld
-import world.cepi.kstom.Manager
-import world.cepi.kstom.command.register
-import world.cepi.kstom.command.unregister
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
@@ -239,7 +236,7 @@ class MinestomServer : Server {
 	override fun getServicesManager(): ServicesManager = servicesManager
 
 	override fun getWorlds(): MutableList<World> {
-		val instances = Manager.instance.instances
+		val instances = MinecraftServer.getInstanceManager().instances
 		val worlds = mutableListOf<World>()
 
 		for (instance in instances) {
@@ -262,14 +259,14 @@ class MinestomServer : Server {
 
 	override fun unloadWorld(name: String, save: Boolean): Boolean {
 		val id = UUID.fromString(name)
-		val instance = Manager.instance.instances.firstOrNull() { it.uniqueId == id } ?: return false
-		Manager.instance.unregisterInstance(instance)
+		val instance = MinecraftServer.getInstanceManager().instances.firstOrNull() { it.uniqueId == id } ?: return false
+		MinecraftServer.getInstanceManager().unregisterInstance(instance)
 		return true
 	}
 
 	override fun unloadWorld(world: World, save: Boolean): Boolean {
 		if (world is MinestomWorld) {
-			Manager.instance.unregisterInstance(world.instance)
+			MinecraftServer.getInstanceManager().unregisterInstance(world.instance)
 			return true
 		}
 
@@ -278,11 +275,11 @@ class MinestomServer : Server {
 
 	override fun getWorld(name: String): World? {
 		val id = UUID.fromString(name)
-		return Manager.instance.instances.firstOrNull { it.uniqueId == id }?.let { MinestomWorld(this, it, null) }
+		return MinecraftServer.getInstanceManager().instances.firstOrNull { it.uniqueId == id }?.let { MinestomWorld(this, it, null) }
 	}
 
 	override fun getWorld(uid: UUID): World? {
-		return Manager.instance.getInstance(uid)?.let { MinestomWorld(this, it, null) }
+		return MinecraftServer.getInstanceManager().getInstance(uid)?.let { MinestomWorld(this, it, null) }
 	}
 
 	override fun getWorld(worldKey: NamespacedKey): World? {
@@ -763,7 +760,7 @@ class MinestomServer : Server {
 	val currentlyRegisteredCommands = mutableListOf<net.minestom.server.command.builder.Command>()
 
 	fun syncCommands() {
-		currentlyRegisteredCommands.forEach { it.unregister() }
+		currentlyRegisteredCommands.forEach { MinecraftServer.getCommandManager().unregister(it) }
 
 		// Register all commands, vanilla ones will be using the old dispatcher references
 		for ((label, command) in commandMap.knownCommands) {
@@ -786,7 +783,7 @@ class MinestomServer : Server {
 
 			currentlyRegisteredCommands.add(commandObject)
 
-			commandObject.register()
+			MinecraftServer.getCommandManager().register(commandObject)
 		}
 	}
 

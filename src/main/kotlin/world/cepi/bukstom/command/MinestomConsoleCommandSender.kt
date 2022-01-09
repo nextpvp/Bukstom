@@ -1,5 +1,6 @@
 package world.cepi.bukstom.command
 
+import net.minestom.server.MinecraftServer
 import org.bukkit.Server
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
@@ -11,12 +12,11 @@ import org.bukkit.permissions.PermissionAttachmentInfo
 import org.bukkit.plugin.Plugin
 import world.cepi.bukstom.MinestomServer
 import world.cepi.bukstom.util.MinestomUnsafeValues
-import world.cepi.kstom.Manager
 import java.util.*
 
 class MinestomConsoleCommandSender(val internalServer: MinestomServer) : ConsoleCommandSender {
 	override fun sendMessage(message: String) {
-		Manager.command.consoleSender.sendMessage(MinestomUnsafeValues.legacyComponentSerializer().deserialize(message))
+		MinecraftServer.getCommandManager().consoleSender.sendMessage(MinestomUnsafeValues.legacyComponentSerializer().deserialize(message))
 	}
 
 	override fun sendMessage(messages: Array<out String>) {
@@ -26,7 +26,7 @@ class MinestomConsoleCommandSender(val internalServer: MinestomServer) : Console
 	}
 
 	override fun sendMessage(sender: UUID?, message: String) {
-		Manager.command.consoleSender.sendMessage(MinestomUnsafeValues.legacyComponentSerializer().deserialize(message))
+		MinecraftServer.getCommandManager().consoleSender.sendMessage(MinestomUnsafeValues.legacyComponentSerializer().deserialize(message))
 	}
 
 	override fun sendMessage(sender: UUID?, messages: Array<out String>) {
@@ -107,8 +107,8 @@ class MinestomConsoleCommandSender(val internalServer: MinestomServer) : Console
 		TODO("Not yet implemented")
 	}
 
-	override fun sendRawMessage(message: String) = Manager.command.consoleSender.sendMessage(message)
+	override fun sendRawMessage(message: String) = MinecraftServer.getCommandManager().consoleSender.sendMessage(message)
 
 	override fun sendRawMessage(sender: UUID?, message: String) =
-		Manager.command.consoleSender.sendMessage(message)
+		MinecraftServer.getCommandManager().consoleSender.sendMessage(message)
 }
