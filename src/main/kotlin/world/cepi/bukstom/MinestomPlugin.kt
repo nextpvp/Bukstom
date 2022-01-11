@@ -7,6 +7,7 @@ import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginLoader
+import org.bukkit.plugin.SimplePluginManager
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -70,7 +71,7 @@ open class MinestomPlugin(
 	}
 
 	override fun getPluginLoader(): PluginLoader {
-		throw Exception("")
+		return MinestomPluginLoader(this)
 	}
 
 	override fun getServer(): MinestomServer {

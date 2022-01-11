@@ -565,7 +565,7 @@ class MinestomServer : Server {
 	}
 
 	override fun getWarningState(): Warning.WarningState {
-		TODO("Not yet implemented")
+		return Warning.WarningState.DEFAULT
 	}
 
 	override fun getItemFactory(): ItemFactory {
