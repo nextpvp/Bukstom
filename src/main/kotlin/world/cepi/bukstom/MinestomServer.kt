@@ -669,19 +669,19 @@ class MinestomServer : Server {
 	}
 
 	override fun <T : Keyed?> getTag(registry: String, tag: NamespacedKey, clazz: Class<T>): Tag<T>? {
-		TODO("Not yet implemented")
+		return null
 	}
 
 	override fun <T : Keyed?> getTags(registry: String, clazz: Class<T>): MutableIterable<Tag<T>> {
-		TODO("Not yet implemented")
+		return mutableListOf()
 	}
 
 	override fun getLootTable(key: NamespacedKey): LootTable? {
-		TODO("Not yet implemented")
+		throw Exception("we 1.8")
 	}
 
 	override fun selectEntities(sender: CommandSender, selector: String): MutableList<Entity> {
-		TODO("Not yet implemented")
+		return mutableListOf()
 	}
 
 	override fun getUnsafe(): UnsafeValues {
@@ -689,23 +689,23 @@ class MinestomServer : Server {
 	}
 
 	override fun spigot(): Server.Spigot {
-		TODO("Not yet implemented")
+		return object : Server.Spigot() {}
 	}
 
 	override fun reloadPermissions() {
-		TODO("Not yet implemented")
+
 	}
 
 	override fun reloadCommandAliases(): Boolean {
-		TODO("Not yet implemented")
+		return true
 	}
 
 	override fun suggestPlayerNamesWhenNullTabCompletions(): Boolean {
-		TODO("Not yet implemented")
+		return true
 	}
 
 	override fun getPermissionMessage(): String {
-		TODO("Not yet implemented")
+		return "Permission Denied"
 	}
 
 	override fun createProfile(uuid: UUID): PlayerProfile {
@@ -721,7 +721,7 @@ class MinestomServer : Server {
 	}
 
 	override fun getCurrentTick(): Int {
-		TODO("Not yet implemented")
+		return 1
 	}
 
 	override fun isStopping(): Boolean {

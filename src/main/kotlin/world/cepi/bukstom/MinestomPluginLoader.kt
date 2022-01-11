@@ -104,7 +104,7 @@ class MinestomPluginLoader(
 				}
 				clazz = clazz.superclass
 			}
-			val executor: EventExecutor = TimedEventExecutor(
+			val executor = TimedEventExecutor(
 				EventExecutor.create(method, eventClass),
 				plugin,
 				method,
