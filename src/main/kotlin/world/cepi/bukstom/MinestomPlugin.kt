@@ -78,7 +78,8 @@ open class MinestomPlugin(
 	}
 
 	override fun isEnabled(): Boolean {
-		return server.pluginManager.isPluginEnabled(this)
+		//return server.pluginManager.isPluginEnabled(this)
+		return true
 	}
 
 	override fun onDisable() {
