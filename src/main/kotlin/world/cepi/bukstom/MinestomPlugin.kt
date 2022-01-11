@@ -13,7 +13,7 @@ import java.io.InputStream
 import java.net.URL
 import java.util.logging.Logger
 
-class MinestomPlugin(
+open class MinestomPlugin(
 	private val minestomServer: MinestomServer,
 	private val desc: PluginDescriptionFile
 ): Plugin {
