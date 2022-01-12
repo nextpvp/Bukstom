@@ -45,7 +45,7 @@ dependencies {
 	implementation("com.charleskorn.kaml:kaml:0.36.0")
 
 	// Get the paper API
-	implementation("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
+	implementation("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
 
 	// Weird bukkit deps
 	implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
@@ -77,7 +77,7 @@ tasks {
 publishing {
 	publications {
 		create("maven_public", MavenPublication::class) {
-			groupId = "world.cepi"
+			groupId = "com.github.nextpvp"
 			artifactId = "bukstom"
 			version = "1.0"
 			from(components.getByName("java"))
@@ -86,4 +86,5 @@ publishing {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> { kotlinOptions.jvmTarget = "17" }
-group = "world.cepi.bukstom"
+group = "com.github.nextpvp"
+version = "1.0"

@@ -5,17 +5,9 @@ import org.bukkit.ChunkSnapshot
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
-import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Entity
-import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.plugin.Plugin
-import java.util.function.Predicate
 
 class MinestomChunk(val minestomWorld: MinestomWorld, val minestomChunk: net.minestom.server.instance.Chunk) : Chunk {
-	override fun getPersistentDataContainer(): PersistentDataContainer {
-		TODO("Not yet implemented")
-	}
-
 	override fun getX(): Int {
 		return minestomChunk.chunkX
 	}
@@ -48,14 +40,7 @@ class MinestomChunk(val minestomWorld: MinestomWorld, val minestomChunk: net.min
 		return world.entities.filter { it.location.chunk == this }.toTypedArray()
 	}
 
-	override fun getTileEntities(useSnapshot: Boolean): Array<BlockState> {
-		TODO("Not yet implemented")
-	}
-
-	override fun getTileEntities(
-		blockPredicate: Predicate<Block>,
-		useSnapshot: Boolean
-	): MutableCollection<BlockState> {
+	override fun getTileEntities(): Array<BlockState> {
 		TODO("Not yet implemented")
 	}
 
@@ -72,47 +57,15 @@ class MinestomChunk(val minestomWorld: MinestomWorld, val minestomChunk: net.min
 		TODO("Not yet implemented")
 	}
 
+	override fun unload(save: Boolean, safe: Boolean): Boolean {
+		TODO("Not yet implemented")
+	}
+
 	override fun unload(save: Boolean): Boolean {
 		TODO("Not yet implemented")
 	}
 
 	override fun unload(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isSlimeChunk(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isForceLoaded(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun setForceLoaded(forced: Boolean) {
-		TODO("Not yet implemented")
-	}
-
-	override fun addPluginChunkTicket(plugin: Plugin): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun removePluginChunkTicket(plugin: Plugin): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun getPluginChunkTickets(): MutableCollection<Plugin> {
-		TODO("Not yet implemented")
-	}
-
-	override fun getInhabitedTime(): Long {
-		TODO("Not yet implemented")
-	}
-
-	override fun setInhabitedTime(ticks: Long) {
-		TODO("Not yet implemented")
-	}
-
-	override fun contains(block: BlockData): Boolean {
 		TODO("Not yet implemented")
 	}
 }

@@ -1,33 +1,25 @@
 package world.cepi.bukstom
 
-import com.destroystokyo.paper.entity.ai.MobGoals
-import com.destroystokyo.paper.profile.PlayerProfile
-import io.papermc.paper.datapack.DatapackManager
-import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.Component
+import com.avaje.ebean.config.ServerConfig
 import net.minestom.server.MinecraftServer
 import net.minestom.server.extras.MojangAuth
 import org.bukkit.*
-import org.bukkit.advancement.Advancement
-import org.bukkit.block.data.BlockData
-import org.bukkit.boss.*
-import org.bukkit.command.CommandMap
 import org.bukkit.command.CommandSender
 import org.bukkit.command.PluginCommand
-import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.help.HelpMap
 import org.bukkit.inventory.*
-import org.bukkit.loot.LootTable
 import org.bukkit.map.MapView
 import org.bukkit.permissions.Permission
-import org.bukkit.plugin.*
+import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.PluginLoadOrder
+import org.bukkit.plugin.ServicesManager
+import org.bukkit.plugin.SimpleServicesManager
 import org.bukkit.plugin.java.JavaPluginLoader
 import org.bukkit.plugin.messaging.Messenger
 import org.bukkit.plugin.messaging.StandardMessenger
-import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scoreboard.ScoreboardManager
 import org.bukkit.util.CachedServerIcon
 import world.cepi.bukstom.command.MinestomCommandMap
@@ -35,15 +27,16 @@ import world.cepi.bukstom.command.MinestomCommandSender
 import world.cepi.bukstom.command.MinestomConsoleCommandSender
 import world.cepi.bukstom.entity.MinestomPlayer
 import world.cepi.bukstom.item.MinestomItemFactory
+import world.cepi.bukstom.plugin.MinestomPluginManager
 import world.cepi.bukstom.scheduler.MinestomScheduler
 import world.cepi.bukstom.scoreboard.MinestomScoreboardManager
 import world.cepi.bukstom.util.MinestomUnsafeValues
+import world.cepi.bukstom.util.toBukkit
 import world.cepi.bukstom.util.toMinestom
 import world.cepi.bukstom.world.MinestomWorld
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
-import java.util.function.Consumer
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -51,7 +44,7 @@ import java.util.logging.Logger
 class MinestomServer : Server {
 	val commandMap = MinestomCommandMap(this)
 
-	private val pluginManager = SimplePluginManager(this, commandMap)
+	private val pluginManager = MinestomPluginManager(this, commandMap)
 	private val logger = Logger.getLogger("Minecraft")
 	private val helpMap = MinestomHelpMap(this)
 	private val messenger = StandardMessenger()
@@ -75,10 +68,6 @@ class MinestomServer : Server {
 		return channels
 	}
 
-	override fun audiences(): MutableIterable<Audience> {
-		TODO("Not yet implemented")
-	}
-
 	override fun getName(): String {
 		return MinecraftServer.getBrandName()
 	}
@@ -91,23 +80,17 @@ class MinestomServer : Server {
 		return MinecraftServer.VERSION_NAME
 	}
 
-	override fun getMinecraftVersion(): String {
-		return MinecraftServer.VERSION_NAME
+	override fun _INVALID_getOnlinePlayers(): Array<Player> {
+		TODO("Not yet implemented")
 	}
 
 	override fun getOnlinePlayers(): MutableCollection<out Player> {
 		return Collections.unmodifiableList(MinecraftServer.getConnectionManager().onlinePlayers.map {
-			MinestomPlayer(
-				it, this
-			)
+			it.toBukkit()
 		})
 	}
 
 	override fun getMaxPlayers(): Int {
-		throw Exception("Not implementing")
-	}
-
-	override fun setMaxPlayers(maxPlayers: Int) {
 		throw Exception("Not implementing")
 	}
 
@@ -123,16 +106,20 @@ class MinestomServer : Server {
 		return MinecraftServer.getServer().address
 	}
 
+	override fun getServerName(): String {
+		TODO("Not yet implemented")
+	}
+
+	override fun getServerId(): String {
+		TODO("Not yet implemented")
+	}
+
 	override fun getWorldType(): String {
 		return "custom"
 	}
 
 	override fun getGenerateStructures(): Boolean {
 		return false
-	}
-
-	override fun getMaxWorldSize(): Int {
-		return Int.MAX_VALUE
 	}
 
 	override fun getAllowEnd(): Boolean {
@@ -189,49 +176,33 @@ class MinestomServer : Server {
 		throw Exception("Not implementing")
 	}
 
-	override fun getTicksPerWaterSpawns(): Int {
-		throw Exception("Not implementing")
-	}
-
-	override fun getTicksPerWaterAmbientSpawns(): Int {
-		throw Exception("Not implementing")
-	}
-
-	override fun getTicksPerAmbientSpawns(): Int {
-		throw Exception("Not implementing")
-	}
-
-	override fun getPlayer(name: String): Player? {
-		return MinecraftServer.getConnectionManager().findPlayer(name)?.let { MinestomPlayer(it, this) }
+	override fun getPlayer(name: String): MinestomPlayer? {
+		return MinecraftServer.getConnectionManager().findPlayer(name)?.toBukkit()
 	}
 
 	override fun getPlayer(id: UUID): Player? {
-		return MinecraftServer.getConnectionManager().getPlayer(id)?.let { MinestomPlayer(it, this) }
+		return MinecraftServer.getConnectionManager().getPlayer(id)?.toBukkit()
 	}
 
 	override fun getPlayerExact(name: String): Player? {
-		return MinecraftServer.getConnectionManager().getPlayer(name)?.let { MinestomPlayer(it, this) }
+		return MinecraftServer.getConnectionManager().getPlayer(name)?.toBukkit()
 	}
 
 	override fun matchPlayer(name: String): MutableList<Player> {
 		val matching = mutableListOf<Player>()
 		for (player in MinecraftServer.getConnectionManager().onlinePlayers) {
 			if (player.username.startsWith(name)) {
-				matching.add(MinestomPlayer(player, this))
+				matching.add(player.toBukkit())
 			}
 		}
 		return matching
 	}
 
-	override fun getPlayerUniqueId(playerName: String): UUID? {
-		return getPlayer(playerName)?.uniqueId
-	}
-
-	override fun getPluginManager(): PluginManager {
+	override fun getPluginManager(): MinestomPluginManager {
 		return pluginManager
 	}
 
-	override fun getScheduler(): BukkitScheduler = scheduler
+	override fun getScheduler(): MinestomScheduler = scheduler
 
 	override fun getServicesManager(): ServicesManager = servicesManager
 
@@ -247,7 +218,7 @@ class MinestomServer : Server {
 	}
 
 
-	override fun createWorld(creator: WorldCreator): World {
+	override fun createWorld(creator: WorldCreator): MinestomWorld {
 		val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
 		val world = MinestomWorld(this, instance, creator)
 
@@ -259,7 +230,8 @@ class MinestomServer : Server {
 
 	override fun unloadWorld(name: String, save: Boolean): Boolean {
 		val id = UUID.fromString(name)
-		val instance = MinecraftServer.getInstanceManager().instances.firstOrNull() { it.uniqueId == id } ?: return false
+		val instance =
+			MinecraftServer.getInstanceManager().instances.firstOrNull() { it.uniqueId == id } ?: return false
 		MinecraftServer.getInstanceManager().unregisterInstance(instance)
 		return true
 	}
@@ -273,42 +245,23 @@ class MinestomServer : Server {
 		return false
 	}
 
-	override fun getWorld(name: String): World? {
-		val id = UUID.fromString(name)
-		return MinecraftServer.getInstanceManager().instances.firstOrNull { it.uniqueId == id }?.let { MinestomWorld(this, it, null) }
+	override fun getWorld(name: String): MinestomWorld? {
+		return getWorld(UUID.fromString(name))
 	}
 
-	override fun getWorld(uid: UUID): World? {
+	override fun getWorld(uid: UUID): MinestomWorld? {
 		return MinecraftServer.getInstanceManager().getInstance(uid)?.let { MinestomWorld(this, it, null) }
 	}
 
-	override fun getWorld(worldKey: NamespacedKey): World? {
-		return getWorld(worldKey.key)
-	}
-
-	override fun getMap(id: Int): MapView? {
-		throw Exception("Not Implementing")
+	override fun getMap(id: Short): MapView {
+		TODO("Not yet implemented")
 	}
 
 	override fun createMap(world: World): MapView {
 		throw Exception("Not Implementing")
 	}
 
-	override fun createExplorerMap(world: World, location: Location, structureType: StructureType): ItemStack {
-		throw Exception("we 1.8")
-	}
-
-	override fun createExplorerMap(
-		world: World, location: Location, structureType: StructureType, radius: Int, findUnexplored: Boolean
-	): ItemStack {
-		throw Exception("we 1.8")
-	}
-
 	override fun reload() {
-		//TODO: See what craftbukkit does
-	}
-
-	override fun reloadData() {
 		//TODO: See what craftbukkit does
 	}
 
@@ -339,16 +292,16 @@ class MinestomServer : Server {
 
 	}
 
+	override fun configureDbConfig(config: ServerConfig?) {
+		TODO("Not yet implemented")
+	}
+
 	//TODO: See if recipe stuff works for 1.8
 	override fun addRecipe(recipe: Recipe?): Boolean {
 		return true
 	}
 
 	override fun getRecipesFor(result: ItemStack): MutableList<Recipe> {
-		throw Exception("we 1.8")
-	}
-
-	override fun getRecipe(recipeKey: NamespacedKey): Recipe? {
 		throw Exception("we 1.8")
 	}
 
@@ -361,10 +314,6 @@ class MinestomServer : Server {
 	}
 
 	override fun resetRecipes() {
-		throw Exception("we 1.8")
-	}
-
-	override fun removeRecipe(key: NamespacedKey): Boolean {
 		throw Exception("we 1.8")
 	}
 
@@ -406,29 +355,23 @@ class MinestomServer : Server {
 		TODO("Not yet implemented")
 	}
 
+	override fun useExactLoginLocation(): Boolean {
+		TODO("Not yet implemented")
+	}
+
 	override fun shutdown() {
 		MinecraftServer.stopCleanly()
 	}
 
 	override fun broadcast(message: String, permission: String): Int {
-		return broadcast(Component.text(message), permission)
-	}
-
-	override fun broadcast(message: Component): Int {
+		var count = 0
 		for (player in onlinePlayers) {
-			player.sendMessage(message)
+			if (player.hasPermission(permission)) {
+				count++
+				player.sendMessage(message)
+			}
 		}
-
-		return onlinePlayers.size
-	}
-
-	override fun broadcast(message: Component, permission: String): Int {
-		val players = onlinePlayers.filter { it.hasPermission(permission) }
-		for (player in players) {
-			player.sendMessage(message)
-		}
-
-		return players.size
+		return count
 	}
 
 	override fun getOfflinePlayer(name: String): OfflinePlayer {
@@ -436,10 +379,6 @@ class MinestomServer : Server {
 	}
 
 	override fun getOfflinePlayer(id: UUID): OfflinePlayer {
-		TODO("Not yet implemented")
-	}
-
-	override fun getOfflinePlayerIfCached(name: String): OfflinePlayer? {
 		TODO("Not yet implemented")
 	}
 
@@ -495,10 +434,6 @@ class MinestomServer : Server {
 		TODO("Not yet implemented")
 	}
 
-	override fun createInventory(owner: InventoryHolder?, type: InventoryType, title: Component): Inventory {
-		TODO("Not yet implemented")
-	}
-
 	override fun createInventory(owner: InventoryHolder?, type: InventoryType, title: String): Inventory {
 		TODO("Not yet implemented")
 	}
@@ -507,19 +442,7 @@ class MinestomServer : Server {
 		TODO("Not yet implemented")
 	}
 
-	override fun createInventory(owner: InventoryHolder?, size: Int, title: Component): Inventory {
-		TODO("Not yet implemented")
-	}
-
 	override fun createInventory(owner: InventoryHolder?, size: Int, title: String): Inventory {
-		TODO("Not yet implemented")
-	}
-
-	override fun createMerchant(title: Component?): Merchant {
-		TODO("Not yet implemented")
-	}
-
-	override fun createMerchant(title: String?): Merchant {
 		TODO("Not yet implemented")
 	}
 
@@ -535,10 +458,6 @@ class MinestomServer : Server {
 		TODO("Not yet implemented")
 	}
 
-	override fun getWaterAmbientSpawnLimit(): Int {
-		TODO("Not yet implemented")
-	}
-
 	override fun getAmbientSpawnLimit(): Int {
 		TODO("Not yet implemented")
 	}
@@ -548,15 +467,7 @@ class MinestomServer : Server {
 		return true
 	}
 
-	override fun motd(): Component {
-		TODO("Not yet implemented")
-	}
-
 	override fun getMotd(): String {
-		TODO("Not yet implemented")
-	}
-
-	override fun shutdownMessage(): Component? {
 		TODO("Not yet implemented")
 	}
 
@@ -598,142 +509,12 @@ class MinestomServer : Server {
 		TODO("Not yet implemented")
 	}
 
-	override fun createVanillaChunkData(world: World, x: Int, z: Int): ChunkGenerator.ChunkData {
-		TODO("Not yet implemented")
-	}
-
-	override fun createBossBar(title: String?, color: BarColor, style: BarStyle, vararg flags: BarFlag): BossBar {
-		TODO("Not yet implemented")
-	}
-
-	override fun createBossBar(
-		key: NamespacedKey, title: String?, color: BarColor, style: BarStyle, vararg flags: BarFlag
-	): KeyedBossBar {
-		TODO("Not yet implemented")
-	}
-
-	override fun getBossBars(): MutableIterator<KeyedBossBar> {
-		TODO("Not yet implemented")
-	}
-
-	override fun getBossBar(key: NamespacedKey): KeyedBossBar? {
-		TODO("Not yet implemented")
-	}
-
-	override fun removeBossBar(key: NamespacedKey): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun getEntity(uuid: UUID): Entity? {
-		TODO("Not yet implemented")
-	}
-
-	override fun getTPS(): DoubleArray {
-		TODO("Not yet implemented")
-	}
-
-	override fun getTickTimes(): LongArray {
-		TODO("Not yet implemented")
-	}
-
-	override fun getAverageTickTime(): Double {
-		TODO("Not yet implemented")
-	}
-
-	override fun getCommandMap(): CommandMap {
-		TODO("Not yet implemented")
-	}
-
-	override fun getAdvancement(key: NamespacedKey): Advancement? {
-		TODO("Not yet implemented")
-	}
-
-	override fun advancementIterator(): MutableIterator<Advancement> {
-		TODO("Not yet implemented")
-	}
-
-	override fun createBlockData(material: Material): BlockData {
-		TODO("Not yet implemented")
-	}
-
-	override fun createBlockData(material: Material, consumer: Consumer<BlockData>?): BlockData {
-		TODO("Not yet implemented")
-	}
-
-	override fun createBlockData(data: String): BlockData {
-		TODO("Not yet implemented")
-	}
-
-	override fun createBlockData(material: Material?, data: String?): BlockData {
-		TODO("Not yet implemented")
-	}
-
-	override fun <T : Keyed?> getTag(registry: String, tag: NamespacedKey, clazz: Class<T>): Tag<T>? {
-		return null
-	}
-
-	override fun <T : Keyed?> getTags(registry: String, clazz: Class<T>): MutableIterable<Tag<T>> {
-		return mutableListOf()
-	}
-
-	override fun getLootTable(key: NamespacedKey): LootTable? {
-		throw Exception("we 1.8")
-	}
-
-	override fun selectEntities(sender: CommandSender, selector: String): MutableList<Entity> {
-		return mutableListOf()
-	}
-
 	override fun getUnsafe(): UnsafeValues {
 		return MinestomUnsafeValues
 	}
 
 	override fun spigot(): Server.Spigot {
 		return object : Server.Spigot() {}
-	}
-
-	override fun reloadPermissions() {
-
-	}
-
-	override fun reloadCommandAliases(): Boolean {
-		return true
-	}
-
-	override fun suggestPlayerNamesWhenNullTabCompletions(): Boolean {
-		return true
-	}
-
-	override fun getPermissionMessage(): String {
-		return "Permission Denied"
-	}
-
-	override fun createProfile(uuid: UUID): PlayerProfile {
-		TODO("Not yet implemented")
-	}
-
-	override fun createProfile(name: String): PlayerProfile {
-		TODO("Not yet implemented")
-	}
-
-	override fun createProfile(uuid: UUID?, name: String?): PlayerProfile {
-		TODO("Not yet implemented")
-	}
-
-	override fun getCurrentTick(): Int {
-		return 1
-	}
-
-	override fun isStopping(): Boolean {
-		return MinecraftServer.isStopping()
-	}
-
-	override fun getMobGoals(): MobGoals {
-		TODO("Not yet implemented")
-	}
-
-	override fun getDatapackManager(): DatapackManager {
-		throw Exception("we 1.8")
 	}
 
 	fun loadPlugins() {
@@ -763,22 +544,22 @@ class MinestomServer : Server {
 		currentlyRegisteredCommands.forEach { MinecraftServer.getCommandManager().unregister(it) }
 
 		// Register all commands, vanilla ones will be using the old dispatcher references
-		for ((label, command) in commandMap.knownCommands) {
+		for ((label, command) in commandMap.getKnownCommands()) {
 
 			val commandObject = object : net.minestom.server.command.builder.SimpleCommand(label) {
 				override fun process(
 					sender: net.minestom.server.command.CommandSender, commandLabel: String, args: Array<out String>
 				): Boolean {
-					return command.execute((sender as? net.minestom.server.entity.Player)?.let {
-						MinestomPlayer(it, this@MinestomServer)
-					} ?: MinestomCommandSender(
-						sender, this@MinestomServer
-					), commandLabel, args)
+					return command.execute(
+						(sender as? net.minestom.server.entity.Player)?.toBukkit() ?: MinestomCommandSender(
+							sender, this@MinestomServer
+						), commandLabel, args
+					)
 				}
 
 				override fun hasAccess(
 					sender: net.minestom.server.command.CommandSender, commandString: String?
-				): Boolean = command.testPermission(MinestomCommandSender(sender, this@MinestomServer))
+				): Boolean = command.testPermissionSilent(MinestomCommandSender(sender, this@MinestomServer))
 			}
 
 			currentlyRegisteredCommands.add(commandObject)

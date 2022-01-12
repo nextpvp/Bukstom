@@ -1,6 +1,5 @@
 package world.cepi.bukstom.util
 
-import net.minestom.server.collision.BoundingBox
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.Entity
@@ -25,6 +24,3 @@ fun Vector.toMinestomVector(): Vec =
 	Vec(this.x, this.y, this.z)
 
 fun Vec.toSpigotVector(): Vector = Vector(x, y, z)
-
-fun BoundingBox.toSpigotBoundingBox(): org.bukkit.util.BoundingBox =
-	org.bukkit.util.BoundingBox(minX, minY, minZ, maxX, maxY, maxZ)

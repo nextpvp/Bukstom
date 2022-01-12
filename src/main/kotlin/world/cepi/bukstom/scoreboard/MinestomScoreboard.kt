@@ -1,6 +1,5 @@
 package world.cepi.bukstom.scoreboard
 
-import net.kyori.adventure.text.Component
 import org.bukkit.OfflinePlayer
 import org.bukkit.scoreboard.*
 
@@ -8,32 +7,6 @@ class MinestomScoreboard(
 	val internalScoreboard: net.minestom.server.scoreboard.Scoreboard
 ) : Scoreboard {
 	override fun registerNewObjective(name: String, criteria: String): Objective {
-		TODO("Not yet implemented")
-	}
-
-	override fun registerNewObjective(name: String, criteria: String, displayName: Component?): Objective {
-		TODO("Not yet implemented")
-	}
-
-	override fun registerNewObjective(
-		name: String,
-		criteria: String,
-		displayName: Component?,
-		renderType: RenderType
-	): Objective {
-		TODO("Not yet implemented")
-	}
-
-	override fun registerNewObjective(name: String, criteria: String, displayName: String): Objective {
-		TODO("Not yet implemented")
-	}
-
-	override fun registerNewObjective(
-		name: String,
-		criteria: String,
-		displayName: String,
-		renderType: RenderType
-	): Objective {
 		TODO("Not yet implemented")
 	}
 

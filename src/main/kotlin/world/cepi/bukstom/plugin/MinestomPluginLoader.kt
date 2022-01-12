@@ -1,27 +1,29 @@
-package world.cepi.bukstom
+package world.cepi.bukstom.plugin
 
-import co.aikar.timings.TimedEventExecutor
 import org.bukkit.Warning
 import org.bukkit.Warning.WarningState
 import org.bukkit.event.Event
+import org.bukkit.event.EventException
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.plugin.*
+import org.bukkit.plugin.java.JavaPluginLoader
+import org.spigotmc.CustomTimingsHandler
 import java.io.File
 import java.lang.Deprecated
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
-import java.util.*
 import java.util.logging.Level
 import java.util.regex.Pattern
 import kotlin.Array
-import kotlin.Boolean
 import kotlin.String
+import kotlin.Throwable
 import kotlin.also
 import kotlin.emptyArray
 
 class MinestomPluginLoader(
 	val plugin: Plugin
-): PluginLoader {
+) : PluginLoader {
 	override fun loadPlugin(file: File): Plugin {
 		return plugin
 	}
@@ -104,13 +106,30 @@ class MinestomPluginLoader(
 				}
 				clazz = clazz.superclass
 			}
-			val executor = TimedEventExecutor(
-				EventExecutor.create(method, eventClass),
-				plugin,
-				method,
-				eventClass
-			) // Paper // Paper (Yes.) - Use factory method `EventExecutor.create()`
-			eventSet.add(RegisteredListener(listener, executor, eh.priority, plugin, eh.ignoreCancelled))
+
+			val timings = CustomTimingsHandler(
+				"Plugin: " + plugin.description.fullName + " Event: " + listener.javaClass.name + "::" + method.name + "(" + eventClass.simpleName + ")",
+				JavaPluginLoader.pluginParentTimer
+			) // Spigot
+
+			val executor = EventExecutor { listener, event ->
+				try {
+					if (!eventClass.isAssignableFrom(event.javaClass)) {
+						return@EventExecutor
+					}
+					// Spigot start
+					val isAsync = event.isAsynchronous
+					if (!isAsync) timings.startTiming()
+					method.invoke(listener, event)
+					if (!isAsync) timings.stopTiming()
+					// Spigot end
+				} catch (ex: InvocationTargetException) {
+					throw EventException(ex.cause)
+				} catch (t: Throwable) {
+					throw EventException(t)
+				}
+			}
+			eventSet.add(TimedRegisteredListener(listener, executor, eh.priority, plugin, eh.ignoreCancelled))
 		}
 		return ret
 	}

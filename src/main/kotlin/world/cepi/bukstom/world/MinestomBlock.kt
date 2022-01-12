@@ -1,16 +1,13 @@
 package world.cepi.bukstom.world
 
-import com.destroystokyo.paper.block.BlockSoundGroup
-import org.bukkit.*
+import org.bukkit.Chunk
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.block.*
-import org.bukkit.block.data.BlockData
-import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.metadata.MetadataValue
 import org.bukkit.plugin.Plugin
-import org.bukkit.util.BoundingBox
-import org.bukkit.util.RayTraceResult
-import org.bukkit.util.Vector
 
 class MinestomBlock(val internalWorld: World, val block: net.minestom.server.instance.block.Block) : Block {
 	override fun setMetadata(metadataKey: String, newMetadataValue: MetadataValue) {
@@ -33,10 +30,6 @@ class MinestomBlock(val internalWorld: World, val block: net.minestom.server.ins
 		TODO("Not yet implemented")
 	}
 
-	override fun getBlockData(): BlockData {
-		TODO("Not yet implemented")
-	}
-
 	override fun getRelative(modX: Int, modY: Int, modZ: Int): Block {
 		TODO("Not yet implemented")
 	}
@@ -50,6 +43,10 @@ class MinestomBlock(val internalWorld: World, val block: net.minestom.server.ins
 	}
 
 	override fun getType(): Material {
+		TODO("Not yet implemented")
+	}
+
+	override fun getTypeId(): Int {
 		TODO("Not yet implemented")
 	}
 
@@ -81,10 +78,6 @@ class MinestomBlock(val internalWorld: World, val block: net.minestom.server.ins
 		TODO("Not yet implemented")
 	}
 
-	override fun isValidTool(itemStack: ItemStack): Boolean {
-		TODO("Not yet implemented")
-	}
-
 	override fun getLocation(): Location {
 		TODO("Not yet implemented")
 	}
@@ -97,11 +90,11 @@ class MinestomBlock(val internalWorld: World, val block: net.minestom.server.ins
 		TODO("Not yet implemented")
 	}
 
-	override fun setBlockData(data: BlockData) {
+	override fun setData(data: Byte) {
 		TODO("Not yet implemented")
 	}
 
-	override fun setBlockData(data: BlockData, applyPhysics: Boolean) {
+	override fun setData(data: Byte, applyPhysics: Boolean) {
 		TODO("Not yet implemented")
 	}
 
@@ -113,15 +106,23 @@ class MinestomBlock(val internalWorld: World, val block: net.minestom.server.ins
 		TODO("Not yet implemented")
 	}
 
+	override fun setTypeId(type: Int): Boolean {
+		TODO("Not yet implemented")
+	}
+
+	override fun setTypeId(type: Int, applyPhysics: Boolean): Boolean {
+		TODO("Not yet implemented")
+	}
+
+	override fun setTypeIdAndData(type: Int, data: Byte, applyPhysics: Boolean): Boolean {
+		TODO("Not yet implemented")
+	}
+
 	override fun getFace(block: Block): BlockFace? {
 		TODO("Not yet implemented")
 	}
 
 	override fun getState(): BlockState {
-		TODO("Not yet implemented")
-	}
-
-	override fun getState(useSnapshot: Boolean): BlockState {
 		TODO("Not yet implemented")
 	}
 
@@ -165,22 +166,6 @@ class MinestomBlock(val internalWorld: World, val block: net.minestom.server.ins
 		TODO("Not yet implemented")
 	}
 
-	override fun isBuildable(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isBurnable(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isReplaceable(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isSolid(): Boolean {
-		TODO("Not yet implemented")
-	}
-
 	override fun getTemperature(): Double {
 		TODO("Not yet implemented")
 	}
@@ -201,56 +186,11 @@ class MinestomBlock(val internalWorld: World, val block: net.minestom.server.ins
 		TODO("Not yet implemented")
 	}
 
-	override fun breakNaturally(tool: ItemStack, triggerEffect: Boolean): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun applyBoneMeal(face: BlockFace): Boolean {
-		TODO("Not yet implemented")
-	}
-
 	override fun getDrops(): MutableCollection<ItemStack> {
 		TODO("Not yet implemented")
 	}
 
 	override fun getDrops(tool: ItemStack?): MutableCollection<ItemStack> {
-		TODO("Not yet implemented")
-	}
-
-	override fun getDrops(tool: ItemStack, entity: Entity?): MutableCollection<ItemStack> {
-		TODO("Not yet implemented")
-	}
-
-	override fun isPreferredTool(tool: ItemStack): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isPassable(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun rayTrace(
-		start: Location,
-		direction: Vector,
-		maxDistance: Double,
-		fluidCollisionMode: FluidCollisionMode
-	): RayTraceResult? {
-		TODO("Not yet implemented")
-	}
-
-	override fun getBoundingBox(): BoundingBox {
-		TODO("Not yet implemented")
-	}
-
-	override fun getSoundGroup(): BlockSoundGroup {
-		TODO("Not yet implemented")
-	}
-
-	override fun getTranslationKey(): String {
-		TODO("Not yet implemented")
-	}
-
-	override fun getDestroySpeed(itemStack: ItemStack, considerEnchants: Boolean): Float {
 		TODO("Not yet implemented")
 	}
 }

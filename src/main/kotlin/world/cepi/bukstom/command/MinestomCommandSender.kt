@@ -7,7 +7,6 @@ import org.bukkit.permissions.PermissionAttachment
 import org.bukkit.permissions.PermissionAttachmentInfo
 import org.bukkit.plugin.Plugin
 import world.cepi.bukstom.MinestomServer
-import java.util.*
 
 class MinestomCommandSender(
 	val commandSender: net.minestom.server.command.CommandSender,
@@ -73,23 +72,11 @@ class MinestomCommandSender(
 		messages.forEach { sendMessage(it) }
 	}
 
-	override fun sendMessage(sender: UUID?, message: String) {
-		sendMessage(message)
-	}
-
-	override fun sendMessage(sender: UUID?, messages: Array<out String>) {
-		sendMessage(messages)
-	}
-
 	override fun getServer(): Server {
 		return internalServer
 	}
 
 	override fun getName(): String {
-		TODO("Not yet implemented")
-	}
-
-	override fun spigot(): CommandSender.Spigot {
 		TODO("Not yet implemented")
 	}
 }

@@ -1,27 +1,24 @@
 package world.cepi.bukstom.util
 
 import net.minestom.server.instance.ChunkPopulator
+import net.minestom.server.instance.Instance
 import net.minestom.server.instance.batch.ChunkBatch
 import net.minestom.server.instance.block.Block
 import net.minestom.server.world.biomes.Biome
+import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.generator.ChunkGenerator
+import world.cepi.bukstom.MinestomServer
+import world.cepi.bukstom.world.MinestomWorld
 import java.util.*
 
 object CustomBiomeGrid : ChunkGenerator.BiomeGrid {
 	override fun getBiome(x: Int, z: Int): org.bukkit.block.Biome {
-		return org.bukkit.block.Biome.CUSTOM
-	}
-
-	override fun getBiome(x: Int, y: Int, z: Int): org.bukkit.block.Biome {
-		return org.bukkit.block.Biome.CUSTOM
+		return org.bukkit.block.Biome.PLAINS
 	}
 
 	override fun setBiome(x: Int, z: Int, bio: org.bukkit.block.Biome) {
 
-	}
-
-	override fun setBiome(x: Int, y: Int, z: Int, bio: org.bukkit.block.Biome) {
 	}
 }
 
@@ -47,3 +44,5 @@ fun ChunkGenerator.toMinestom(world: World): net.minestom.server.instance.ChunkG
 		}
 	}
 }
+
+fun Instance.toBukkit() = MinestomWorld(Bukkit.getServer() as MinestomServer, this, null)

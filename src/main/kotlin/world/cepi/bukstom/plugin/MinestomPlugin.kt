@@ -1,5 +1,6 @@
-package world.cepi.bukstom
+package world.cepi.bukstom.plugin
 
+import com.avaje.ebean.EbeanServer
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.FileConfiguration
@@ -7,7 +8,7 @@ import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginLoader
-import org.bukkit.plugin.SimplePluginManager
+import world.cepi.bukstom.MinestomServer
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -17,7 +18,7 @@ import java.util.logging.Logger
 open class MinestomPlugin(
 	private val minestomServer: MinestomServer,
 	private val desc: PluginDescriptionFile
-): Plugin {
+) : Plugin {
 	override fun onTabComplete(
 		sender: CommandSender,
 		command: Command,
@@ -101,6 +102,11 @@ open class MinestomPlugin(
 
 	override fun setNaggable(canNag: Boolean) {
 
+	}
+
+	// Has any plugin ever used this api????
+	override fun getDatabase(): EbeanServer {
+		throw Exception("lol")
 	}
 
 	override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator? {

@@ -2,24 +2,23 @@ package world.cepi.bukstom.entity
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import org.bukkit.*
-import org.bukkit.block.BlockFace
-import org.bukkit.block.PistonMoveReaction
+import org.bukkit.EntityEffect
+import org.bukkit.Location
+import org.bukkit.Server
+import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.Pose
-import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.metadata.MetadataValue
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionAttachment
 import org.bukkit.permissions.PermissionAttachmentInfo
-import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.plugin.Plugin
-import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
-import world.cepi.bukstom.util.*
+import world.cepi.bukstom.util.toMinestomVector
+import world.cepi.bukstom.util.toPosition
+import world.cepi.bukstom.util.toSpigotVector
 import world.cepi.bukstom.world.MinestomWorld
 import java.util.*
 
@@ -45,14 +44,6 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 	}
 
 	override fun sendMessage(messages: Array<out String>) {
-
-	}
-
-	override fun sendMessage(sender: UUID?, message: String) {
-
-	}
-
-	override fun sendMessage(sender: UUID?, messages: Array<out String>) {
 
 	}
 
@@ -122,24 +113,12 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 		return object : Entity.Spigot() {}
 	}
 
-	override fun customName(): Component? {
-		return entity.customName
-	}
-
-	override fun customName(customName: Component?) {
-		entity.customName = customName
-	}
-
 	override fun getCustomName(): String? {
 		return name
 	}
 
 	override fun setCustomName(name: String?) {
-		customName(Component.text(name ?: ""))
-	}
-
-	override fun getPersistentDataContainer(): PersistentDataContainer {
-		TODO("Not yet implemented")
+		entity.customName = Component.text(name ?: "")
 	}
 
 	override fun getLocation(): Location {
@@ -165,32 +144,12 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 		return entity.velocity.toSpigotVector()
 	}
 
-	override fun getHeight(): Double {
-		return entity.entityType.height()
-	}
-
-	override fun getWidth(): Double {
-		return entity.entityType.width()
-	}
-
-	override fun getBoundingBox(): BoundingBox {
-		return entity.boundingBox.toSpigotBoundingBox()
-	}
-
 	override fun isOnGround(): Boolean {
 		return entity.isOnGround
 	}
 
-	override fun isInWater(): Boolean {
-		return false
-	}
-
 	override fun getWorld(): World {
 		return minestomWorld
-	}
-
-	override fun setRotation(yaw: Float, pitch: Float) {
-		entity.refreshPosition(entity.position.withYaw(yaw).withPitch(pitch))
 	}
 
 	override fun teleport(location: Location): Boolean {
@@ -243,14 +202,6 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 		TODO("Not yet implemented")
 	}
 
-	override fun isPersistent(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun setPersistent(persistent: Boolean) {
-		TODO("Not yet implemented")
-	}
-
 	override fun getPassenger(): Entity? {
 		val passenger = entity.passengers.firstOrNull() ?: return null
 		return MinestomEntity(passenger, minestomWorld)
@@ -258,23 +209,7 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 
 	override fun setPassenger(passenger: Entity): Boolean {
 		entity.passengers.forEach { entity.removePassenger(it) }
-		return addPassenger(passenger)
-	}
-
-	override fun getPassengers(): MutableList<Entity> {
-		return entity.passengers.map { MinestomEntity(it, minestomWorld) }.toMutableList()
-	}
-
-	override fun addPassenger(passenger: Entity): Boolean {
-		if (passenger !is MinestomEntity) return false
-		entity.addPassenger(passenger.entity)
-		return true
-	}
-
-	override fun removePassenger(passenger: Entity): Boolean {
-		if (passenger !is MinestomEntity) return false
-		entity.removePassenger(passenger.entity)
-		return true
+		return entity.passengers.add((passenger as MinestomEntity).entity)
 	}
 
 	override fun isEmpty(): Boolean {
@@ -340,113 +275,5 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 
 	override fun isCustomNameVisible(): Boolean {
 		return entity.isCustomNameVisible
-	}
-
-	override fun setGlowing(flag: Boolean) {
-		entity.isGlowing = flag
-	}
-
-	override fun isGlowing(): Boolean {
-		return entity.isGlowing
-	}
-
-	override fun setInvulnerable(flag: Boolean) {
-		TODO("Not yet implemented")
-	}
-
-	override fun isInvulnerable(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isSilent(): Boolean {
-		return entity.isSilent
-	}
-
-	override fun setSilent(flag: Boolean) {
-		entity.isSilent = flag
-	}
-
-	override fun hasGravity(): Boolean {
-		return entity.hasNoGravity()
-	}
-
-	override fun setGravity(gravity: Boolean) {
-		entity.setNoGravity(!gravity)
-	}
-
-	override fun getPortalCooldown(): Int {
-		return 0
-	}
-
-	override fun setPortalCooldown(cooldown: Int) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getScoreboardTags(): MutableSet<String> {
-		TODO("Not yet implemented")
-	}
-
-	override fun addScoreboardTag(tag: String): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun removeScoreboardTag(tag: String): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun getPistonMoveReaction(): PistonMoveReaction {
-		TODO("Not yet implemented")
-	}
-
-	override fun getFacing(): BlockFace {
-		TODO("Not yet implemented")
-	}
-
-	override fun getPose(): Pose {
-		return entity.pose.toSpigotPose()
-	}
-
-	override fun getOrigin(): Location? {
-		TODO("Not yet implemented")
-	}
-
-	override fun fromMobSpawner(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun getChunk(): Chunk {
-		return location.chunk
-	}
-
-	override fun getEntitySpawnReason(): CreatureSpawnEvent.SpawnReason {
-		return CreatureSpawnEvent.SpawnReason.CUSTOM
-	}
-
-	override fun isInRain(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isInBubbleColumn(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isInWaterOrRain(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isInWaterOrBubbleColumn(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isInWaterOrRainOrBubbleColumn(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isInLava(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isTicking(): Boolean {
-		TODO("Not yet implemented")
 	}
 }

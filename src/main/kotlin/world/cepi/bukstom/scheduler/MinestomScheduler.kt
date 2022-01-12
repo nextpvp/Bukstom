@@ -9,9 +9,7 @@ import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scheduler.BukkitWorker
 import java.util.concurrent.Callable
-import java.util.concurrent.Executor
 import java.util.concurrent.Future
-import java.util.function.Consumer
 
 class MinestomScheduler : BukkitScheduler {
 	override fun scheduleSyncDelayedTask(plugin: Plugin, task: Runnable, delay: Long): Int =
@@ -27,10 +25,12 @@ class MinestomScheduler : BukkitScheduler {
 		MinecraftServer.getSchedulerManager().buildTask(task).schedule().id
 
 	override fun scheduleSyncRepeatingTask(plugin: Plugin, task: Runnable, delay: Long, period: Long): Int =
-		MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).repeat(period, TimeUnit.TICK).schedule().id
+		MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).repeat(period, TimeUnit.TICK)
+			.schedule().id
 
 	override fun scheduleSyncRepeatingTask(plugin: Plugin, task: BukkitRunnable, delay: Long, period: Long): Int =
-		MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).repeat(period, TimeUnit.TICK).schedule().id
+		MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).repeat(period, TimeUnit.TICK)
+			.schedule().id
 
 	override fun scheduleAsyncDelayedTask(plugin: Plugin, task: Runnable, delay: Long): Int =
 		MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule().id
@@ -39,20 +39,26 @@ class MinestomScheduler : BukkitScheduler {
 		MinecraftServer.getSchedulerManager().buildTask(task).schedule().id
 
 	override fun scheduleAsyncRepeatingTask(plugin: Plugin, task: Runnable, delay: Long, period: Long): Int =
-		MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).repeat(period, TimeUnit.TICK).schedule().id
+		MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).repeat(period, TimeUnit.TICK)
+			.schedule().id
 
 	override fun <T : Any?> callSyncMethod(plugin: Plugin, task: Callable<T>): Future<T> {
 		TODO("Not yet implemented")
 	}
 
 	override fun cancelTask(taskId: Int) {
-		MinecraftServer.getSchedulerManager().getTask(taskId)?.let { MinecraftServer.getSchedulerManager().removeTask(it) }
+		MinecraftServer.getSchedulerManager().getTask(taskId)
+			?.let { MinecraftServer.getSchedulerManager().removeTask(it) }
 	}
 
 	override fun cancelTasks(plugin: Plugin) {
 		MinecraftServer.getSchedulerManager().tasks.forEach {
 			MinecraftServer.getSchedulerManager().removeTask(it)
 		}
+	}
+
+	override fun cancelAllTasks() {
+		MinecraftServer.getSchedulerManager().tasks.forEach { it.cancel() }
 	}
 
 	override fun isCurrentlyRunning(taskId: Int) = when (MinecraftServer.getSchedulerManager().getTask(taskId).status) {
@@ -79,65 +85,58 @@ class MinestomScheduler : BukkitScheduler {
 	override fun runTask(plugin: Plugin, task: Runnable): BukkitTask =
 		MinestomTask(MinecraftServer.getSchedulerManager().buildTask(task).schedule(), plugin)
 
-	override fun runTask(plugin: Plugin, task: Consumer<BukkitTask>) {
-		TODO("Not yet implemented")
-	}
-
 	override fun runTask(plugin: Plugin, task: BukkitRunnable) =
 		MinestomTask(MinecraftServer.getSchedulerManager().buildTask(task).schedule(), plugin)
 
 	override fun runTaskAsynchronously(plugin: Plugin, task: Runnable): BukkitTask =
 		MinestomTask(MinecraftServer.getSchedulerManager().buildTask(task).schedule(), plugin)
 
-	override fun runTaskAsynchronously(plugin: Plugin, task: Consumer<BukkitTask>) {
-		TODO("Not yet implemented")
-	}
-
 	override fun runTaskAsynchronously(plugin: Plugin, task: BukkitRunnable) =
 		MinestomTask(MinecraftServer.getSchedulerManager().buildTask(task).schedule(), plugin)
 
 	override fun runTaskLater(plugin: Plugin, task: Runnable, delay: Long): BukkitTask =
-		MinestomTask(MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule(), plugin)
-
-	override fun runTaskLater(plugin: Plugin, task: Consumer<BukkitTask>, delay: Long) {
-		TODO("Not yet implemented")
-	}
-
-	override fun runTaskLater(plugin: Plugin, task: BukkitRunnable, delay: Long): BukkitTask =
-		MinestomTask(MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule(), plugin)
-
-	override fun runTaskLaterAsynchronously(plugin: Plugin, task: Runnable, delay: Long) =
-		MinestomTask(MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule(), plugin)
-
-	override fun runTaskLaterAsynchronously(plugin: Plugin, task: Consumer<BukkitTask>, delay: Long) {
-		TODO("Not yet implemented")
-	}
-
-	override fun runTaskLaterAsynchronously(plugin: Plugin, task: BukkitRunnable, delay: Long) =
-		MinestomTask(MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule(), plugin)
-
-	override fun runTaskTimer(plugin: Plugin, task: Runnable, delay: Long, period: Long) =
 		MinestomTask(
-			MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).repeat(period, TimeUnit.TICK).schedule(),
+			MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule(),
 			plugin
 		)
 
-	override fun runTaskTimer(plugin: Plugin, task: Consumer<BukkitTask>, delay: Long, period: Long) {
-		TODO("Not yet implemented")
-	}
+	override fun runTaskLater(plugin: Plugin, task: BukkitRunnable, delay: Long): BukkitTask =
+		MinestomTask(
+			MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule(),
+			plugin
+		)
+
+	override fun runTaskLaterAsynchronously(plugin: Plugin, task: Runnable, delay: Long) =
+		MinestomTask(
+			MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule(),
+			plugin
+		)
+
+	override fun runTaskLaterAsynchronously(plugin: Plugin, task: BukkitRunnable, delay: Long) =
+		MinestomTask(
+			MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule(),
+			plugin
+		)
+
+	override fun runTaskTimer(plugin: Plugin, task: Runnable, delay: Long, period: Long) =
+		MinestomTask(
+			MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK)
+				.repeat(period, TimeUnit.TICK).schedule(),
+			plugin
+		)
 
 	override fun runTaskTimer(plugin: Plugin, task: BukkitRunnable, delay: Long, period: Long) =
 		MinestomTask(
-			MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).repeat(period, TimeUnit.TICK).schedule(),
+			MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK)
+				.repeat(period, TimeUnit.TICK).schedule(),
 			plugin
 		)
 
 	override fun runTaskTimerAsynchronously(plugin: Plugin, task: Runnable, delay: Long, period: Long) =
-		MinestomTask(MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule(), plugin)
-
-	override fun runTaskTimerAsynchronously(plugin: Plugin, task: Consumer<BukkitTask>, delay: Long, period: Long) {
-		TODO("Not yet implemented")
-	}
+		MinestomTask(
+			MinecraftServer.getSchedulerManager().buildTask(task).delay(delay, TimeUnit.TICK).schedule(),
+			plugin
+		)
 
 	override fun runTaskTimerAsynchronously(
 		plugin: Plugin,
@@ -145,10 +144,6 @@ class MinestomScheduler : BukkitScheduler {
 		delay: Long,
 		period: Long
 	): BukkitTask {
-		TODO("Not yet implemented")
-	}
-
-	override fun getMainThreadExecutor(plugin: Plugin): Executor {
 		TODO("Not yet implemented")
 	}
 }
