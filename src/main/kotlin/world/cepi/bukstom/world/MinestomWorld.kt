@@ -238,7 +238,7 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	override fun <T : Entity?> getEntitiesByClass(vararg classes: Class<T>): MutableCollection<T> {
 		val ents = mutableListOf<T>()
 
-		for(clazz in classes) {
+		for (clazz in classes) {
 			ents += getEntitiesByClass(clazz)
 		}
 
@@ -253,7 +253,7 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	override fun getEntitiesByClasses(vararg classes: Class<*>): MutableCollection<Entity> {
 		val ents = mutableListOf<Entity>()
 
-		for(clazz in classes) {
+		for (clazz in classes) {
 			ents += entities.filter { it.javaClass.isAssignableFrom(clazz) }
 		}
 
@@ -422,7 +422,7 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun <T : Any?> playEffect(location: Location, effect: Effect, data: T?, radius: Int) {
-		for(player in players.filter { if(radius != -1) location.distance(it.location) < radius else true }) {
+		for (player in players.filter { if (radius != -1) location.distance(it.location) < radius else true }) {
 			player.playEffect(location, effect, data)
 		}
 	}

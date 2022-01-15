@@ -5,7 +5,7 @@ import org.bukkit.WorldBorder
 
 class MinestomWorldBorder(
 	val border: net.minestom.server.instance.WorldBorder
-): WorldBorder {
+) : WorldBorder {
 	override fun reset() {
 
 	}

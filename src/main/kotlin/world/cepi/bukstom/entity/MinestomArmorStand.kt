@@ -1,7 +1,6 @@
 package world.cepi.bukstom.entity
 
 import net.minestom.server.entity.LivingEntity
-import net.minestom.server.entity.Player
 import net.minestom.server.entity.metadata.other.ArmorStandMeta
 import org.bukkit.entity.ArmorStand
 import org.bukkit.inventory.ItemStack
@@ -14,7 +13,7 @@ class MinestomArmorStand(entity: LivingEntity, minestomWorld: MinestomWorld) : A
 	minestomWorld
 ) {
 	val meta = entity.entityMeta as ArmorStandMeta
-	
+
 	override fun getItemInHand(): ItemStack {
 		return entity.itemInMainHand.toBukkit()
 	}

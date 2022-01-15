@@ -3,14 +3,15 @@ package world.cepi.bukstom.entity
 import net.minestom.server.entity.metadata.other.FallingBlockMeta
 import net.minestom.server.instance.block.Block
 import org.bukkit.Material
-import org.bukkit.entity.Entity
 import org.bukkit.entity.FallingBlock
 import world.cepi.bukstom.util.toBukkit
 import world.cepi.bukstom.world.MinestomWorld
 
-class MinestomFallingBlock(entity: net.minestom.server.entity.Entity, minestomWorld: MinestomWorld) : FallingBlock, MinestomEntity<net.minestom.server.entity.Entity>(entity,
-	minestomWorld
-) {
+class MinestomFallingBlock(entity: net.minestom.server.entity.Entity, minestomWorld: MinestomWorld) : FallingBlock,
+	MinestomEntity<net.minestom.server.entity.Entity>(
+		entity,
+		minestomWorld
+	) {
 	val meta = entity.entityMeta as FallingBlockMeta
 
 	fun setMaterial(mat: Material) {
