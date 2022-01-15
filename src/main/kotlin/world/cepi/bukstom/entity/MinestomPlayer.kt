@@ -1,17 +1,18 @@
 package world.cepi.bukstom.entity
 
 import org.bukkit.*
-import org.bukkit.block.Block
 import org.bukkit.conversations.Conversation
 import org.bukkit.conversations.ConversationAbandonedEvent
-import org.bukkit.entity.*
-import org.bukkit.event.player.PlayerTeleportEvent
-import org.bukkit.inventory.*
+import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryView
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.PlayerInventory
 import org.bukkit.map.MapView
 import org.bukkit.permissions.Permission
 import org.bukkit.plugin.Plugin
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.util.Vector
 import world.cepi.bukstom.MinestomServer
@@ -19,14 +20,13 @@ import world.cepi.bukstom.util.teleport
 import world.cepi.bukstom.util.toMinestomVector
 import world.cepi.bukstom.world.MinestomWorld
 import java.net.InetSocketAddress
-import java.util.*
 
 class MinestomPlayer(
 	val minestomPlayer: net.minestom.server.entity.Player,
 	minestomWorld: MinestomWorld,
 	val internalServer: MinestomServer
 ) :
-	MinestomEntity(minestomPlayer, minestomWorld), Player {
+	MinestomLivingEntity(minestomPlayer, minestomWorld), Player {
 
 	override fun hasPermission(name: String): Boolean {
 		return minestomPlayer.hasPermission(name)
@@ -68,43 +68,6 @@ class MinestomPlayer(
 		return true
 	}
 
-	override fun teleport(location: Location, cause: PlayerTeleportEvent.TeleportCause): Boolean {
-		minestomPlayer.teleport(location)
-		return true
-	}
-
-	override fun teleport(destination: Entity): Boolean {
-		minestomPlayer.teleport(destination.location)
-		return true
-	}
-
-	override fun teleport(destination: Entity, cause: PlayerTeleportEvent.TeleportCause): Boolean {
-		minestomPlayer.teleport(destination.location)
-		return true
-	}
-
-	override fun getEntityId() = minestomPlayer.entityId
-
-	override fun setFireTicks(ticks: Int) {
-		minestomPlayer.setFireForDuration(ticks)
-	}
-
-	override fun remove() = minestomPlayer.remove()
-
-	override fun isDead(): Boolean {
-		return minestomPlayer.isDead
-	}
-
-	override fun getUniqueId(): UUID {
-		return minestomPlayer.uuid
-	}
-
-	override fun getTicksLived() = minestomPlayer.aliveTicks.toInt()
-
-	override fun setTicksLived(value: Int) {
-		TODO("Not yet implemented")
-	}
-
 	override fun playEffect(loc: Location?, effect: Effect?, data: Int) {
 		TODO("Not yet implemented")
 	}
@@ -118,227 +81,7 @@ class MinestomPlayer(
 	}
 
 	override fun spigot(): Player.Spigot {
-		TODO("Not yet implemented")
-	}
-
-	override fun damage(amount: Double) {
-		TODO("Not yet implemented")
-	}
-
-	override fun damage(amount: Double, source: Entity?) {
-		TODO("Not yet implemented")
-	}
-
-	override fun _INVALID_damage(amount: Int) {
-		TODO("Not yet implemented")
-	}
-
-	override fun _INVALID_damage(amount: Int, source: Entity?) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getHealth(): Double {
-		TODO("Not yet implemented")
-	}
-
-	override fun _INVALID_getHealth(): Int {
-		TODO("Not yet implemented")
-	}
-
-	override fun setHealth(health: Double) {
-		TODO("Not yet implemented")
-	}
-
-	override fun _INVALID_setHealth(health: Int) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getMaxHealth(): Double {
-		TODO("Not yet implemented")
-	}
-
-	override fun _INVALID_getMaxHealth(): Int {
-		TODO("Not yet implemented")
-	}
-
-	override fun setMaxHealth(health: Double) {
-		TODO("Not yet implemented")
-	}
-
-	override fun _INVALID_setMaxHealth(health: Int) {
-		TODO("Not yet implemented")
-	}
-
-	override fun resetMaxHealth() {
-		TODO("Not yet implemented")
-	}
-
-	override fun <T : Projectile?> launchProjectile(projectile: Class<out T>?): T {
-		TODO("Not yet implemented")
-	}
-
-	override fun <T : Projectile?> launchProjectile(projectile: Class<out T>?, velocity: Vector?): T {
-		TODO("Not yet implemented")
-	}
-
-	override fun getEyeHeight(): Double {
-		TODO("Not yet implemented")
-	}
-
-	override fun getEyeHeight(ignoreSneaking: Boolean): Double {
-		TODO("Not yet implemented")
-	}
-
-	override fun getEyeLocation(): Location {
-		TODO("Not yet implemented")
-	}
-
-	override fun getLineOfSight(transparent: HashSet<Byte>?, maxDistance: Int): MutableList<Block> {
-		TODO("Not yet implemented")
-	}
-
-	override fun getLineOfSight(transparent: MutableSet<Material>?, maxDistance: Int): MutableList<Block> {
-		TODO("Not yet implemented")
-	}
-
-	override fun getTargetBlock(transparent: HashSet<Byte>?, maxDistance: Int): Block {
-		TODO("Not yet implemented")
-	}
-
-	override fun getTargetBlock(transparent: MutableSet<Material>?, maxDistance: Int): Block {
-		TODO("Not yet implemented")
-	}
-
-	override fun getLastTwoTargetBlocks(transparent: HashSet<Byte>?, maxDistance: Int): MutableList<Block> {
-		TODO("Not yet implemented")
-	}
-
-	override fun getLastTwoTargetBlocks(transparent: MutableSet<Material>?, maxDistance: Int): MutableList<Block> {
-		TODO("Not yet implemented")
-	}
-
-	override fun throwEgg(): Egg {
-		TODO("Not yet implemented")
-	}
-
-	override fun throwSnowball(): Snowball {
-		TODO("Not yet implemented")
-	}
-
-	override fun shootArrow(): Arrow {
-		TODO("Not yet implemented")
-	}
-
-	override fun getRemainingAir(): Int {
-		TODO("Not yet implemented")
-	}
-
-	override fun setRemainingAir(ticks: Int) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getMaximumAir(): Int {
-		TODO("Not yet implemented")
-	}
-
-	override fun setMaximumAir(ticks: Int) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getMaximumNoDamageTicks(): Int {
-		TODO("Not yet implemented")
-	}
-
-	override fun setMaximumNoDamageTicks(ticks: Int) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getLastDamage(): Double {
-		TODO("Not yet implemented")
-	}
-
-	override fun _INVALID_getLastDamage(): Int {
-		TODO("Not yet implemented")
-	}
-
-	override fun setLastDamage(damage: Double) {
-		TODO("Not yet implemented")
-	}
-
-	override fun _INVALID_setLastDamage(damage: Int) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getNoDamageTicks(): Int {
-		TODO("Not yet implemented")
-	}
-
-	override fun setNoDamageTicks(ticks: Int) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getKiller(): Player {
-		TODO("Not yet implemented")
-	}
-
-	override fun addPotionEffect(effect: PotionEffect?): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun addPotionEffect(effect: PotionEffect?, force: Boolean): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun addPotionEffects(effects: MutableCollection<PotionEffect>?): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun hasPotionEffect(type: PotionEffectType?): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun removePotionEffect(type: PotionEffectType?) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getActivePotionEffects(): MutableCollection<PotionEffect> {
-		TODO("Not yet implemented")
-	}
-
-	override fun hasLineOfSight(other: Entity?): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun getRemoveWhenFarAway(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun setRemoveWhenFarAway(remove: Boolean) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getEquipment(): EntityEquipment {
-		TODO("Not yet implemented")
-	}
-
-	override fun setCanPickupItems(pickup: Boolean) {
-		TODO("Not yet implemented")
-	}
-
-	override fun getCanPickupItems(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun isLeashed(): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun getLeashHolder(): Entity {
-		TODO("Not yet implemented")
-	}
-
-	override fun setLeashHolder(holder: Entity?): Boolean {
-		TODO("Not yet implemented")
+		return object : Player.Spigot() {}
 	}
 
 	override fun getInventory(): PlayerInventory {
@@ -879,5 +622,20 @@ class MinestomPlayer(
 
 	/*override fun canSee(player: Player): Boolean {
 		return (player as? MinestomPlayer)?.let { minestomPlayer.isViewer(it.minestomPlayer) } ?: false
+	}*/
+
+	/*	override fun teleport(location: Location, cause: PlayerTeleportEvent.TeleportCause): Boolean {
+		minestomPlayer.teleport(location)
+		return true
+	}
+
+	override fun teleport(destination: Entity): Boolean {
+		minestomPlayer.teleport(destination.location)
+		return true
+	}
+
+	override fun teleport(destination: Entity, cause: PlayerTeleportEvent.TeleportCause): Boolean {
+		minestomPlayer.teleport(destination.location)
+		return true
 	}*/
 }

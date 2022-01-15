@@ -2,6 +2,7 @@ package world.cepi.bukstom.entity
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import net.minestom.server.entity.LivingEntity
 import org.bukkit.EntityEffect
 import org.bukkit.Location
 import org.bukkit.Server
@@ -22,7 +23,8 @@ import world.cepi.bukstom.util.toSpigotVector
 import world.cepi.bukstom.world.MinestomWorld
 import java.util.*
 
-open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val minestomWorld: MinestomWorld) : Entity {
+open class MinestomEntity<T : net.minestom.server.entity.Entity>(val entity: T, val minestomWorld: MinestomWorld) :
+	Entity {
 	override fun setMetadata(metadataKey: String, newMetadataValue: MetadataValue) {
 		TODO("Not yet implemented")
 	}
@@ -179,7 +181,11 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 	}
 
 	override fun getFireTicks(): Int {
-		TODO("Not yet implemented")
+		return if (entity.isOnFire) {
+			1
+		} else {
+			0
+		}
 	}
 
 	override fun getMaxFireTicks(): Int {
@@ -187,7 +193,7 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 	}
 
 	override fun setFireTicks(ticks: Int) {
-		TODO("Not yet implemented")
+		entity.isOnFire = ticks > 0
 	}
 
 	override fun remove() {
@@ -195,7 +201,7 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 	}
 
 	override fun isDead(): Boolean {
-		TODO("Not yet implemented")
+		return (entity as? LivingEntity)?.isDead ?: false
 	}
 
 	override fun isValid(): Boolean {
@@ -209,7 +215,7 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 
 	override fun setPassenger(passenger: Entity): Boolean {
 		entity.passengers.forEach { entity.removePassenger(it) }
-		return entity.passengers.add((passenger as MinestomEntity).entity)
+		return entity.passengers.add((passenger as MinestomEntity<*>).entity)
 	}
 
 	override fun isEmpty(): Boolean {
@@ -275,5 +281,10 @@ open class MinestomEntity(val entity: net.minestom.server.entity.Entity, val min
 
 	override fun isCustomNameVisible(): Boolean {
 		return entity.isCustomNameVisible
+	}
+
+	companion object {
+		operator fun invoke(entity: net.minestom.server.entity.Entity, minestomWorld: MinestomWorld) =
+			MinestomEntity<net.minestom.server.entity.Entity>(entity, minestomWorld)
 	}
 }

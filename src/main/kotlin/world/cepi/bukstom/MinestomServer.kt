@@ -81,7 +81,11 @@ class MinestomServer : Server {
 	}
 
 	override fun _INVALID_getOnlinePlayers(): Array<Player> {
-		TODO("Not yet implemented")
+		val players = mutableListOf<Player>()
+		for (world in worlds) {
+			players += world.players
+		}
+		return players.toTypedArray()
 	}
 
 	override fun getOnlinePlayers(): MutableCollection<out Player> {
@@ -250,7 +254,7 @@ class MinestomServer : Server {
 	}
 
 	override fun getWorld(uid: UUID): MinestomWorld? {
-		return MinecraftServer.getInstanceManager().getInstance(uid)?.let { MinestomWorld(this, it, null) }
+		return MinecraftServer.getInstanceManager().getInstance(uid)?.toBukkit()
 	}
 
 	override fun getMap(id: Short): MapView {
@@ -296,25 +300,23 @@ class MinestomServer : Server {
 		TODO("Not yet implemented")
 	}
 
-	//TODO: See if recipe stuff works for 1.8
 	override fun addRecipe(recipe: Recipe?): Boolean {
-		return true
+		TODO("Not yet implemented")
 	}
 
 	override fun getRecipesFor(result: ItemStack): MutableList<Recipe> {
-		throw Exception("we 1.8")
+		TODO("Not yet implemented")
 	}
 
 	override fun recipeIterator(): MutableIterator<Recipe> {
-		throw Exception("we 1.8")
+		TODO("Not yet implemented")
 	}
 
 	override fun clearRecipes() {
-		throw Exception("we 1.8")
 	}
 
 	override fun resetRecipes() {
-		throw Exception("we 1.8")
+
 	}
 
 	override fun getCommandAliases(): MutableMap<String, Array<String>> {
@@ -498,11 +500,11 @@ class MinestomServer : Server {
 	}
 
 	override fun setIdleTimeout(threshold: Int) {
-		TODO("Not yet implemented")
+
 	}
 
 	override fun getIdleTimeout(): Int {
-		TODO("Not yet implemented")
+		return Int.MAX_VALUE
 	}
 
 	override fun createChunkData(world: World): ChunkGenerator.ChunkData {

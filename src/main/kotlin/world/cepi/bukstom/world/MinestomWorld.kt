@@ -1,5 +1,9 @@
 package world.cepi.bukstom.world
 
+import net.minestom.server.coordinate.Point
+import net.minestom.server.data.Data
+import net.minestom.server.entity.ItemEntity
+import net.minestom.server.instance.Explosion
 import net.minestom.server.instance.Instance
 import org.bukkit.*
 import org.bukkit.block.Biome
@@ -11,12 +15,26 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.metadata.MetadataValue
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
-import world.cepi.bukstom.entity.MinestomItemEntity
+import world.cepi.bukstom.entity.MinestomFallingBlock
+import world.cepi.bukstom.entity.MinestomItem
+import world.cepi.bukstom.util.toBukkit
+import world.cepi.bukstom.util.toMinestom
 import world.cepi.bukstom.util.toPosition
 import java.io.File
 import java.util.*
 
 class MinestomWorld(val server: Server, val instance: Instance, val creator: WorldCreator?) : World {
+
+	init {
+		instance.setExplosionSupplier { centerX, centerY, centerZ, strength, _ ->
+			return@setExplosionSupplier object : Explosion(centerX, centerY, centerZ, strength) {
+				override fun prepare(instance: Instance?): MutableList<Point> {
+					return mutableListOf()
+				}
+			}
+		}
+	}
+
 	override fun sendPluginMessage(source: Plugin, channel: String, message: ByteArray) {
 		for (player in players) {
 			player.sendPluginMessage(source, channel, message)
@@ -50,7 +68,9 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun playSound(location: Location, sound: Sound, volume: Float, pitch: Float) {
-		//playSound(location, sound, volume, pitch)
+		for (player in players) {
+			player.playSound(location, sound, volume, pitch)
+		}
 	}
 
 	override fun getBlockAt(x: Int, y: Int, z: Int): Block {
@@ -62,11 +82,11 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun getBlockTypeIdAt(x: Int, y: Int, z: Int): Int {
-		TODO("Not yet implemented")
+		return getBlockAt(x, y, z).typeId
 	}
 
-	override fun getBlockTypeIdAt(location: Location?): Int {
-		TODO("Not yet implemented")
+	override fun getBlockTypeIdAt(location: Location): Int {
+		return getBlockTypeIdAt(location.blockX, location.blockY, location.blockZ)
 	}
 
 	override fun getHighestBlockYAt(x: Int, z: Int): Int {
@@ -85,16 +105,17 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 		TODO("Not yet implemented")
 	}
 
-	override fun getChunkAt(x: Int, z: Int): Chunk {
-		TODO("Not yet implemented")
+	override fun getChunkAt(x: Int, z: Int): MinestomChunk {
+		val chunk = instance.getChunk(x, z) ?: throw Exception("Chunk not loaded")
+		return MinestomChunk(this, chunk)
 	}
 
 	override fun getChunkAt(location: Location): Chunk {
-		TODO("Not yet implemented")
+		return getChunkAt(location.blockX, location.blockZ)
 	}
 
 	override fun getChunkAt(block: Block): Chunk {
-		TODO("Not yet implemented")
+		return getChunkAt(block.location)
 	}
 
 	override fun isChunkLoaded(chunk: Chunk): Boolean {
@@ -118,7 +139,8 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun loadChunk(x: Int, z: Int, generate: Boolean): Boolean {
-		TODO("Not yet implemented")
+		instance.loadChunk(x, z)
+		return true
 	}
 
 	override fun isChunkInUse(x: Int, z: Int): Boolean {
@@ -141,7 +163,7 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun unloadChunk(x: Int, z: Int, save: Boolean, safe: Boolean): Boolean {
-		TODO("Not yet implemented")
+		return unloadChunk(x, z)
 	}
 
 	override fun unloadChunkRequest(x: Int, z: Int): Boolean {
@@ -161,17 +183,17 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun dropItem(location: Location, item: ItemStack): Item {
-		val entity = net.minestom.server.entity.Entity(net.minestom.server.entity.EntityType.ITEM)
+		val entity = ItemEntity(item.toMinestom())
 		entity.setInstance(instance, location.toPosition())
-		return MinestomItemEntity(entity, this)
+		return MinestomItem(entity, this)
 	}
 
 	override fun dropItemNaturally(location: Location, item: ItemStack): Item {
-		TODO("Not yet implemented")
+		return dropItem(location, item)
 	}
 
 	override fun spawnArrow(location: Location, direction: Vector, speed: Float, spread: Float): Arrow {
-		TODO("Not yet implemented")
+		return spawnEntity(location, EntityType.ARROW) as Arrow
 	}
 
 	override fun generateTree(location: Location, type: TreeType): Boolean {
@@ -183,47 +205,63 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun spawnEntity(loc: Location, type: EntityType): Entity {
-		TODO("Not yet implemented")
+		val ent = net.minestom.server.entity.Entity(type.toMinestom())
+		ent.setInstance(instance, loc.toPosition())
+		return ent.toBukkit()
 	}
 
-	override fun spawnCreature(loc: Location?, type: EntityType?): LivingEntity {
-		TODO("Not yet implemented")
+	override fun spawnCreature(loc: Location, type: EntityType): LivingEntity {
+		return spawnEntity(loc, type) as LivingEntity
 	}
 
 	override fun spawnCreature(loc: Location?, type: CreatureType?): LivingEntity {
-		TODO("Not yet implemented")
+		throw Exception()
 	}
 
 	override fun strikeLightning(loc: Location): LightningStrike {
-		TODO("Not yet implemented")
+		return spawnEntity(loc, EntityType.LIGHTNING) as LightningStrike
 	}
 
 	override fun strikeLightningEffect(loc: Location): LightningStrike {
-		TODO("Not yet implemented")
+		return strikeLightning(loc)
 	}
 
 	override fun getEntities(): MutableList<Entity> {
-		TODO("Not yet implemented")
+		return instance.entities.map { it.toBukkit() }.toMutableList()
 	}
 
 	override fun getLivingEntities(): MutableList<LivingEntity> {
-		TODO("Not yet implemented")
+		return entities.filterIsInstance<LivingEntity>().toMutableList()
 	}
 
+	// What is the point of this???? The fuck
 	override fun <T : Entity?> getEntitiesByClass(vararg classes: Class<T>): MutableCollection<T> {
-		TODO("Not yet implemented")
+		val ents = mutableListOf<T>()
+
+		for(clazz in classes) {
+			ents += getEntitiesByClass(clazz)
+		}
+
+		return ents
 	}
 
 	override fun <T : Entity?> getEntitiesByClass(cls: Class<T>): MutableCollection<T> {
-		TODO("Not yet implemented")
+		return entities.filter { it.javaClass.isAssignableFrom(cls) }.toMutableList() as MutableCollection<T>
 	}
 
+	// Types are a pain
 	override fun getEntitiesByClasses(vararg classes: Class<*>): MutableCollection<Entity> {
-		TODO("Not yet implemented")
+		val ents = mutableListOf<Entity>()
+
+		for(clazz in classes) {
+			ents += entities.filter { it.javaClass.isAssignableFrom(clazz) }
+		}
+
+		return ents
 	}
 
 	override fun getPlayers(): MutableList<Player> {
-		TODO("Not yet implemented")
+		return instance.players.map { it.toBukkit() }.toMutableList()
 	}
 
 	override fun getNearbyEntities(location: Location, x: Double, y: Double, z: Double): MutableCollection<Entity> {
@@ -231,11 +269,11 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun getName(): String {
-		TODO("Not yet implemented")
+		return instance.uniqueId.toString()
 	}
 
 	override fun getUID(): UUID {
-		TODO("Not yet implemented")
+		return instance.uniqueId
 	}
 
 	override fun getSpawnLocation(): Location {
@@ -247,59 +285,64 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun getTime(): Long {
-		TODO("Not yet implemented")
+		return instance.time
 	}
 
 	override fun setTime(time: Long) {
-		TODO("Not yet implemented")
+		instance.time = time
 	}
 
 	override fun getFullTime(): Long {
-		TODO("Not yet implemented")
+		return instance.time
 	}
 
 	override fun setFullTime(time: Long) {
-		TODO("Not yet implemented")
+		instance.time = time
 	}
 
+	//TODO: Implement when weather is added: https://github.com/Minestom/Minestom/pull/576
 	override fun hasStorm(): Boolean {
-		TODO("Not yet implemented")
+		return false
 	}
 
 	override fun setStorm(hasStorm: Boolean) {
-		TODO("Not yet implemented")
+
 	}
 
 	override fun getWeatherDuration(): Int {
-		TODO("Not yet implemented")
+		return 0
 	}
 
 	override fun setWeatherDuration(duration: Int) {
-		TODO("Not yet implemented")
+
 	}
 
 	override fun isThundering(): Boolean {
-		TODO("Not yet implemented")
+		return false
 	}
 
 	override fun setThundering(thundering: Boolean) {
-		TODO("Not yet implemented")
+
 	}
 
 	override fun getThunderDuration(): Int {
-		TODO("Not yet implemented")
+		return 0
 	}
 
 	override fun setThunderDuration(duration: Int) {
-		TODO("Not yet implemented")
+
 	}
 
 	override fun createExplosion(x: Double, y: Double, z: Double, power: Float): Boolean {
-		TODO("Not yet implemented")
+		val explosion =
+			instance.explosionSupplier?.createExplosion(x.toFloat(), y.toFloat(), z.toFloat(), power, Data.EMPTY)
+				?: return false
+		explosion.apply(instance)
+		return true
 	}
 
 	override fun createExplosion(x: Double, y: Double, z: Double, power: Float, setFire: Boolean): Boolean {
-		TODO("Not yet implemented")
+		return createExplosion(x, y, z, power)
 	}
 
 	override fun createExplosion(
@@ -310,43 +353,44 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 		setFire: Boolean,
 		breakBlocks: Boolean
 	): Boolean {
-		TODO("Not yet implemented")
+		return createExplosion(x, y, z, power)
 	}
 
 	override fun createExplosion(loc: Location, power: Float): Boolean {
-		TODO("Not yet implemented")
+		return createExplosion(loc.x, loc.y, loc.z, power)
 	}
 
 	override fun createExplosion(loc: Location, power: Float, setFire: Boolean): Boolean {
-		TODO("Not yet implemented")
+		return createExplosion(loc.x, loc.y, loc.z, power)
 	}
 
 	override fun getEnvironment(): World.Environment {
-		TODO("Not yet implemented")
+		return World.Environment.NORMAL
 	}
 
 	override fun getSeed(): Long {
-		TODO("Not yet implemented")
+		throw Exception("Not implementable")
 	}
 
 	override fun getPVP(): Boolean {
+		// Maybe we can implement with minestompvp
 		TODO("Not yet implemented")
 	}
 
 	override fun setPVP(pvp: Boolean) {
-		TODO("Not yet implemented")
+
 	}
 
 	override fun getGenerator(): ChunkGenerator? {
-		TODO("Not yet implemented")
+		return null
 	}
 
 	override fun save() {
-		TODO("Not yet implemented")
+
 	}
 
 	override fun getPopulators(): MutableList<BlockPopulator> {
-		TODO("Not yet implemented")
+		return mutableListOf()
 	}
 
 	override fun <T : Entity?> spawn(location: Location, clazz: Class<T>): T {
@@ -354,27 +398,33 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun spawnFallingBlock(location: Location, material: Material, data: Byte): FallingBlock {
-		TODO("Not yet implemented")
+		val block = spawnEntity(location, EntityType.FALLING_BLOCK) as MinestomFallingBlock
+
+		block.material = material
+		block.blockData = data
+		return block
 	}
 
-	override fun spawnFallingBlock(location: Location?, blockId: Int, blockData: Byte): FallingBlock {
-		TODO("Not yet implemented")
+	override fun spawnFallingBlock(location: Location, blockId: Int, blockData: Byte): FallingBlock {
+		return spawnFallingBlock(location, Material.getMaterial(blockId), blockData)
 	}
 
 	override fun playEffect(location: Location, effect: Effect, data: Int) {
-		TODO("Not yet implemented")
+		playEffect(location, effect, data, -1)
 	}
 
 	override fun playEffect(location: Location, effect: Effect, data: Int, radius: Int) {
-		TODO("Not yet implemented")
+		playEffect(location, effect, data, radius)
 	}
 
 	override fun <T : Any?> playEffect(location: Location, effect: Effect, data: T?) {
-		TODO("Not yet implemented")
+		playEffect(location, effect, data, -1)
 	}
 
 	override fun <T : Any?> playEffect(location: Location, effect: Effect, data: T?, radius: Int) {
-		TODO("Not yet implemented")
+		for(player in players.filter { if(radius != -1) location.distance(it.location) < radius else true }) {
+			player.playEffect(location, effect, data)
+		}
 	}
 
 	override fun getEmptyChunkSnapshot(
@@ -399,7 +449,7 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun getBiome(x: Int, z: Int): Biome {
-		TODO("Not yet implemented")
+		return Biome.PLAINS
 	}
 
 	override fun setBiome(x: Int, z: Int, bio: Biome) {
@@ -527,6 +577,6 @@ class MinestomWorld(val server: Server, val instance: Instance, val creator: Wor
 	}
 
 	override fun getWorldBorder(): WorldBorder {
-		TODO("Not yet implemented")
+		return MinestomWorldBorder(instance.worldBorder)
 	}
 }
